@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Зависимости вашего приложения, если есть
+}
+
+task createJar(type: Jar) {
+    archiveFileName = 'myapp.jar'
+    destinationDirectory = file('build/libs')
+
+    from sourceSets.main.output
+
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+}
+
+task createDockerImage(type: Exec) {
+    workingDir 'build/docker'
+    commandLine 'docker', 'build', '-t', 'myapp', '.'
+}
+
+task runDockerContainer(type: Exec) {
+    dependsOn createDockerImage
+    commandLine 'docker', 'run', '-it', '--rm', 'myapp'
+}
